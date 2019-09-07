@@ -1,12 +1,19 @@
 <!DOCTYPE html>
+
 <html>
 
+
 <head>
+
     <title>Growler</title>
+
 </head>
 
+
 <body>
+
     <div id="growler">
+
         <div>Total Packages: <input type="text" v-on:change="updateTotalPackages(totalPackages)"
                 v-model.number.lazy="totalPackages" /></div>
         <div>
@@ -29,16 +36,28 @@
                 Difference: {{inductDifference}}
                 <div v-show="inductDifference > 0">Increase Induct Rate</div>
             </div>
+
             <hr>
+
             <div>
+
                 <h1>Estimated Time Completed: {{estimatedTimeComplete}}</h1>
+
             </div>
+
         </div>
+
         <hr>
+
     </div>
+
     <script type="text/javascript" src="https://unpkg.com/vue"></script>
+
     <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
     <script type="text/javascript" src="growler.js"></script>
+
 </body>
+
 
 </html>
