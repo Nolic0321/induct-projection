@@ -72,8 +72,8 @@ var growler = new Vue({
 		console.log("Minutes Elapsed: " + minutesElapsed)
 		var projectedInductedLast = this.getAverageRate() / 60 / 60 / 1000 * this.inductRates[this.inductRates.length-1].elapsedTime
 		console.log("Projected Inducted: " + projectedInductedLast)
-		this.projectedInducted = Math.round(this.projectedInducted + projectedInductedLast)
 		this.projectedLeft = this.totalPackages - this.projectedInducted
+		this.projectedInducted = Math.round(this.projectedInducted + projectedInductedLast)
 		this.calculateEstimatedTime()
 	},
 	getAverageRate: function(){
