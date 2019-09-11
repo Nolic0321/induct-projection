@@ -31,8 +31,9 @@ var growler = new Vue({
     methods: {
         beginInduction: function () {
 
-            this.addInductRate(0)
+            //this.addInductRate(0)
 
+	    this.projectedLeft = this.totalPackages
             this.inductionStarted = true
 
         },
@@ -56,21 +57,36 @@ var growler = new Vue({
         },
 
         addInductRate: function (inductRate) {
-
-            growler.inductRates.push({ rate: inductRate, time: new Date().getTime() })
+	    var currentTime = new Date().getTime()
+            growler.inductRates.push({ rate: inductRate, time: currentTime , elapsedTime: this.inductRates.length == 0 ? 0 : currentTime - this.inductRates[this.inductRates.length-1].time })
 
             this.calculateEstimatedTime()
 
+	    this.updateProjectedInduct()
         },
 
-        minutesRemaining: function () {
-
-            var aveRate = this.inductRates.reduce((total, n) => total + n.rate, 0)
+	updateProjectedInduct: function(){
+		console.log("Updated Projected Induct")
+		console.log("Converting milliseconds " + this.inductRates[this.inductRates.length-1].elapsedTime)
+		var minutesElapsed = new Date(this.inductRates[this.inductRates.length-1].elapsedTime).getMinutes()
+		console.log("Minutes Elapsed: " + minutesElapsed)
+		var projectedInductedLast = this.getAverageRate() / 60 / 60 / 1000 * this.inductRates[this.inductRates.length-1].elapsedTime
+		console.log("Projected Inducted: " + projectedInductedLast)
+		this.projectedInducted = Math.round(this.projectedInducted + projectedInductedLast)
+		this.projectedLeft = this.totalPackages - this.projectedInducted
+		this.calculateEstimatedTime()
+	},
+	getAverageRate: function(){
+	    var aveRate = this.inductRates.reduce((total, n) => total + n.rate, 0)
 
 
             aveRate = aveRate / this.inductRates.length
 
-            return Number.isNaN(aveRate) ? 0 : this.actualLeft / aveRate * 60
+	    return aveRate
+	},
+        minutesRemaining: function () {
+
+            return Number.isNaN(this.getAverageRate())? 0 : this.actualLeft / this.getAverageRate() * 60
 
         },
 
@@ -98,9 +114,13 @@ var growler = new Vue({
 
         },
 
-        totalInductedChanged: function(event){
 
-            clearInterval(timeout)
+	getNiceTime: function(time){
+		var dateTime = new Date(time);
+		//return dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds()
+		return dateTime.toLocaleTimeString()
+	},
+        updateTotalInducted: function(){
 
             if (event){
 
@@ -108,12 +128,10 @@ var growler = new Vue({
 
             }
 
-            timeout = setTimeout(() => {this.calculateEstimatedTime()},1000)
+            setTimeout(() => {this.calculateEstimatedTime()},1000)
 
         }
 
     }
 })
 
-
-var timeout = null
