@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 var growler = new Vue({
 
     el: "#growler",
