@@ -6,20 +6,17 @@ var growler = new Vue({
         inductRates: [],
         totalInducted: 0,
         inductRate: 0,
-        today: new Date(),
         estimatedTimeComplete: new Date().toLocaleTimeString(),
         projectedInducted: 0,
-        projectedLeft: 0,
         actualLeft: 0,
         inductDifference: 0,
-        inductionStarted: false,
+        inductionStarted: false,    //Used to show/hide html elements
         startTime: null
     },
     methods: {
         beginInduction: function () {
-            this.projectedLeft = this.totalPackages
             this.inductionStarted = true
-            this.startTime = new Date().getTime()
+            this.startTime = new Date()
             this.queueNextRequest()
         },
         calculateEstimatedTime: function () {
