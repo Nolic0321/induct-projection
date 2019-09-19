@@ -1,44 +1,92 @@
 <!DOCTYPE html>
+
 <html>
 
+
 <head>
+
     <title>Growler</title>
+
 </head>
 
+
 <body>
+
     <div id="growler">
+
         <div>Total Packages: <input type="text" v-on:change="updateTotalPackages(totalPackages)"
-                v-model.number.lazy="totalPackages" /></div>
+
+                v-model.number.lazy="totalPackages" />
+	</div>
         <div>
+
             <button v-on:click="beginInduction()">Begin Induction</button>
+
         </div>
+
         <div v-show="inductionStarted===true" v-cloak>
+
             <div>
+
                 Induct Rate: <input type="text" v-model.number.lazy="inductRate" onClick="this.select()">
-                <button v-on:click="addInductRate(inductRate)">Add Rate</button> 
+
+                <button v-on:click="addInductRate(inductRate)">Add Rate</button>
+ 
                 <br>
-                Total Inducted <input type="text"
-                    v-on:keyup="totalInductedChanged" v-model.number.lazy="totalInducted">
+
+                Total Inducted <input type="text" v-model.number.lazy="totalInducted">
+
+		<button v-on:click="calculateEstimatedTime()">Update</button>
             </div>
+
             <hr>
+
             <div>
+
                 Projected Inducted: {{projectedInducted}}
+
                 <br>
+
                 Actual Inducted: {{totalInducted}}
+
                 <br>
+
                 Difference: {{inductDifference}}
+
                 <div v-show="inductDifference > 0">Increase Induct Rate</div>
+
             </div>
+
             <hr>
+
             <div>
+
                 <h1>Estimated Time Completed: {{estimatedTimeComplete}}</h1>
+
             </div>
+
+	    <hr>
+	<div v-show="inductRates.length > 0">
+		<ul>
+			<li v-for="rate in inductRates">
+				{{rate.rate}} - {{getNiceTime(rate.time)}} - {{rate.elapsedTime}}
+			</li>
+		</ul>
+	</div>
         </div>
+
         <hr>
+
     </div>
+
     <script type="text/javascript" src="https://unpkg.com/vue"></script>
+
     <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
     <script type="text/javascript" src="growler.js"></script>
+
+    <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </body>
+
 
 </html>
