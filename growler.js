@@ -13,7 +13,8 @@ var growler = new Vue({
         inductDifference: 0,
         inductionStarted: false,
         chartData: [],
-        startTime:null
+        startTime: null,
+        ignoreRatesBelow: 0
     },
     methods: {
         beginInduction: function () {
@@ -32,7 +33,17 @@ var growler = new Vue({
             this.chartData.push([new Date(), this.getAverageRate()])
         },
         getAverageRate: function () {
-            return Math.round(this.inductRates.reduce((total, n) => total + n.rate, 0)/this.inductRates.length)
+            var countedRates = 0
+            var reducedRates = this.inductRates.reduce(
+                function (total, n) {
+                    console.log("this.ignoreRatesBelow = " + growler.ignoreRatesBelow)
+                    if (n.rate >= growler.ignoreRatesBelow) {
+                        countedRates++
+                        return total + n.rate
+                    }
+                    return total
+                }, 0)
+            return countedRates == 0 ? 0 : Math.round(reducedRates / countedRates)
         },
         addInductRate: function (inductRate) {
             growler.inductRates.push({
