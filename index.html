@@ -36,7 +36,10 @@
                 <div v-show="inductDifference > 0">Increase Induct Rate</div>
             </div>
             <hr>
-            <line-chart :data="chartData"></line-chart>
+            <div>
+                <h3>Average Rates</h3>
+            </div>
+            <line-chart :data="chartData" label="Average Rate" :max="8000"></line-chart>
             <div v-show="inductRates.length > 0">
                 <ul>
                     <li v-for="rate in inductRates">

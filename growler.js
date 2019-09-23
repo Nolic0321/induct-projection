@@ -12,15 +12,17 @@ var growler = new Vue({
         actualLeft: 0,
         inductDifference: 0,
         inductionStarted: false,
-        chartData: []
+        chartData: [],
+        startTime:null
     },
     methods: {
         beginInduction: function () {
             this.addInductRate(0)
             this.inductionStarted = true
+            this.startTime = new Date()
         },
         calculateEstimatedTime: function () {
-            this.updateActualLeft()
+            this.updateInducteLeftValues()
             var today = new Date();
             if (this.inductRates.length > 2) {
                 var minutesRemaining = this.minutesRemaining()
@@ -30,7 +32,7 @@ var growler = new Vue({
             this.chartData.push([new Date(), this.getAverageRate()])
         },
         getAverageRate: function () {
-            return this.inductRates.reduce((total, n) => total + n.rate, 0)/this.inductRates.length;
+            return Math.round(this.inductRates.reduce((total, n) => total + n.rate, 0)/this.inductRates.length)
         },
         addInductRate: function (inductRate) {
             growler.inductRates.push({
@@ -43,15 +45,15 @@ var growler = new Vue({
         minutesRemaining: function () {
             var aveRate = this.getAverageRate()
 
-            aveRate = aveRate / this.inductRates.length
             return Number.isNaN(aveRate) ? 0 : this.actualLeft / aveRate * 60
         },
         updateTotalPackages: function (newTotal) {
             this.totalPackages = newTotal
-            this.updateActualLeft()
+            this.updateInducteLeftValues()
             //Update current values to reflect new total changes
         },
-        updateActualLeft: function () {
+        updateInducteLeftValues: function () {
+            this.projectedInducted = Math.round(this.getAverageRate() / 60 / 60 / 1000 * ((new Date() - this.startTime)))
             this.actualLeft = this.totalPackages - this.totalInducted
             this.inductDifference = this.projectedInducted - this.totalInducted
         },
