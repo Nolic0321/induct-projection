@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 
 <html>
+
 <head>
     <title>Growler</title>
 </head>
+
 <body>
     <div id="growler">
+        <div v-cloak v-show="inductionStarted">
+            <h1>Estimated Time Completed: {{estimatedTimeComplete}}</h1>
+        </div>
+        <hr>
         <div>Total Packages: <input type="text" v-on:change="updateTotalPackages(totalPackages)"
                 v-model.number.lazy="totalPackages" />
         </div>
         <div>
-            <button v-on:click="beginInduction()">Begin Induction</button>
+            <button v-show="!inductionStarted" v-on:click="beginInduction()">Begin Induction</button>
         </div>
-        <div v-show="inductionStarted===true" v-cloak>
+        <div v-show="inductionStarted" v-cloak>
             <div>
                 Induct Rate: <input type="text" v-model.number.lazy="inductRate" onClick="this.select()">
                 <button v-on:click="addInductRate(inductRate)">Add Rate</button>
@@ -30,10 +36,7 @@
                 <div v-show="inductDifference > 0">Increase Induct Rate</div>
             </div>
             <hr>
-            <div>
-                <h1>Estimated Time Completed: {{estimatedTimeComplete}}</h1>
-            </div>
-            <hr>
+            <line-chart :data="chartData"></line-chart>
             <div v-show="inductRates.length > 0">
                 <ul>
                     <li v-for="rate in inductRates">
@@ -47,7 +50,8 @@
     <script type="text/javascript" src="https://unpkg.com/vue"></script>
     <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="growler.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+    <script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
 </body>
 
 
