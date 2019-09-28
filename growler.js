@@ -11,52 +11,78 @@ var growler = new Vue({
         projectedLeft: 0,
         actualLeft: 0,
         inductDifference: 0,
-        inductionStarted: false
+        inductionStarted: false,
+        chartData: [],
+        startTime: null,
+        ignoreRatesBelow: 0,
+        ignoreRatesBefore: null
     },
     methods: {
         beginInduction: function () {
-            this.addInductRate(0)
             this.inductionStarted = true
+            this.startTime = new Date()
+            this.ignoreRatesBefore = new Date()
         },
         calculateEstimatedTime: function () {
-            this.updateActualLeft()
+            this.updateInducteLeftValues()
             var today = new Date();
             if (this.inductRates.length > 2) {
                 var minutesRemaining = this.minutesRemaining()
                 today.setMinutes(today.getMinutes() + minutesRemaining)
             }
             growler.estimatedTimeComplete = today.toLocaleTimeString();
+            this.chartData.push([new Date(), this.getAverageRate()])
+        },
+        getAverageRate: function () {
+            var countedRates = 0
+            var ignoreRatesBeforeTime = new Date(this.ignoreRatesBefore)
+            var reducedRates = this.inductRates.reduce(
+                function (total, n) {
+                    if (n.time >= ignoreRatesBeforeTime) {
+                        countedRates++
+                        return total + n.rate
+                    }
+                    return total
+                }, 0)
+            return countedRates == 0 ? 0 : Math.round(reducedRates / countedRates)
         },
         addInductRate: function (inductRate) {
-            growler.inductRates.push({ rate: inductRate, time: new Date().getTime() })
+            growler.inductRates.push({
+                rate: inductRate,
+                time: new Date().getTime(),
+                elapsed: this.inductRates == 0 ? 0 : new Date().getTime() - growler.inductRates[growler.inductRates.length - 1]
+            })
             this.calculateEstimatedTime()
         },
         minutesRemaining: function () {
-            var aveRate = this.inductRates.reduce((total, n) => total + n.rate, 0)
+            var aveRate = this.getAverageRate()
 
-            aveRate = aveRate / this.inductRates.length
             return Number.isNaN(aveRate) ? 0 : this.actualLeft / aveRate * 60
         },
         updateTotalPackages: function (newTotal) {
             this.totalPackages = newTotal
-            this.updateActualLeft()
+            this.updateInducteLeftValues()
             //Update current values to reflect new total changes
         },
-        updateActualLeft: function () {
+        updateInducteLeftValues: function () {
+            this.projectedInducted = Math.round(this.getAverageRate() / 60 / 60 / 1000 * ((new Date() - this.startTime)))
             this.actualLeft = this.totalPackages - this.totalInducted
             this.inductDifference = this.projectedInducted - this.totalInducted
         },
-        calculateProjectedInducted: function () {
-            var aveRate = this.inductRates.reduce((total, n) => total + n.rate, 0)
-            var timeElapsed = 0
-        },
-        totalInductedChanged: function(event){
+        totalInductedChanged: function (event) {
             clearInterval(timeout)
-            if (event){
+            if (event) {
                 console.log(event);
             }
-            timeout = setTimeout(() => {this.calculateEstimatedTime()},1000)
-        }
+            timeout = setTimeout(() => {
+                this.calculateEstimatedTime()
+            }, 1000)
+        },
+        getNiceTime: function (time) {
+            var dateTime = new Date(time);
+            //return dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds()
+            return dateTime.toLocaleTimeString()
+        },
     }
 })
 
