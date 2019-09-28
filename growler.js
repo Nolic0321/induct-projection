@@ -36,7 +36,6 @@ var growler = new Vue({
             var countedRates = 0
             var reducedRates = this.inductRates.reduce(
                 function (total, n) {
-                    console.log("this.ignoreRatesBelow = " + growler.ignoreRatesBelow)
                     if (n.rate >= growler.ignoreRatesBelow) {
                         countedRates++
                         return total + n.rate
