@@ -14,13 +14,14 @@ var growler = new Vue({
         inductionStarted: false,
         chartData: [],
         startTime: null,
-        ignoreRatesBelow: 0
+        ignoreRatesBelow: 0,
+        ignoreRatesBefore: null
     },
     methods: {
         beginInduction: function () {
-            this.addInductRate(0)
             this.inductionStarted = true
             this.startTime = new Date()
+            this.ignoreRatesBefore = this.startTime
         },
         calculateEstimatedTime: function () {
             this.updateInducteLeftValues()
