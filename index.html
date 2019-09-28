@@ -39,10 +39,10 @@
             </div>
             <hr>
             <div>
-                <h3>Average Rates</h3>
+                Ignore Rates Before: <datetime v-model="ignoreRatesBefore" type="datetime"></datetime>
             </div>
             <div>
-                Ignore Rates Under <input type="text" v-model.number.lazy="ignoreRatesBelow">  Ignore Rates Before<span> <datetime v-model="ignoreRatesBefore"></datetime></span>
+                <h3>Average Rates</h3>
             </div>
             <line-chart :data="chartData" label="Average Rate" :max="8000"></line-chart>
             <div v-show="inductRates.length > 0">
@@ -61,9 +61,8 @@
     <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
     <script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
 <script src="https://unpkg.com/luxon"></script>
-<script src="https://unpkg.com/weekstart"></script>
 <script src="https://unpkg.com/vue-datetime"></script>
-<link rel="stylesheet" href="https://unpkg.com/vue-datetime.css"></link>
+<link rel="stylesheet" href="vue-datetime.min.css"></link>
 </body>
 
 

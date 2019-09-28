@@ -21,7 +21,7 @@ var growler = new Vue({
         beginInduction: function () {
             this.inductionStarted = true
             this.startTime = new Date()
-            this.ignoreRatesBefore = this.startTime
+            this.ignoreRatesBefore = new Date()
         },
         calculateEstimatedTime: function () {
             this.updateInducteLeftValues()
@@ -35,9 +35,10 @@ var growler = new Vue({
         },
         getAverageRate: function () {
             var countedRates = 0
+            var ignoreRatesBeforeTime = new Date(this.ignoreRatesBefore)
             var reducedRates = this.inductRates.reduce(
                 function (total, n) {
-                    if (n.rate >= growler.ignoreRatesBelow) {
+                    if (n.time >= ignoreRatesBeforeTime) {
                         countedRates++
                         return total + n.rate
                     }
