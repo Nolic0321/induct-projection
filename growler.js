@@ -15,7 +15,8 @@ var growler = new Vue({
         chartData: [],
         startTime: null,
         ignoreRatesBelow: 0,
-        ignoreRatesBefore: null
+        ignoreRatesBefore: null,
+        inductURL:''
     },
     methods: {
         beginInduction: function () {
@@ -83,6 +84,23 @@ var growler = new Vue({
             //return dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds()
             return dateTime.toLocaleTimeString()
         },
+        requestInductRate: function(url){
+            axios.get(
+                 url,
+      {
+	method: 'GET',
+      mode: 'no-cors',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+      withCredentials: true,
+      credentials: 'same-origin'
+	})
+            .then(function(response){
+                console.log(response)
+            })
+        }
     }
 })
 

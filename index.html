@@ -37,6 +37,10 @@
                 Difference: {{inductDifference}}
                 <div v-show="inductDifference > 0">Increase Induct Rate</div>
             </div>
+            <div>
+                Request URL: <input type="text" v-model.lazy="inductURL"/>
+                <button v-on:click="requestInductRate(inductURL)">Request Rate</button>
+            </div>
             <hr>
             <div>
                 Ignore Rates Before: <datetime v-model="ignoreRatesBefore" type="datetime"></datetime>
