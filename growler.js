@@ -92,10 +92,8 @@ var growler = new Vue({
       mode: 'no-cors',
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
-      credentials: 'same-origin'
+        'Content-Type': 'application/json'
+      }
 	})
             .then(function(response){
                 console.log(response)
