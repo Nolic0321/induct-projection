@@ -48,7 +48,11 @@
             <div>
                 <h3>Average Rates</h3>
             </div>
-            <line-chart :data="chartData" label="Average Rate" :max="8000"></line-chart>
+		   <GChart
+    type="LineChart"
+    :data="chartData"
+    :options="chartOptions"
+  />
             <div v-show="inductRates.length > 0">
                 <ul>
                     <li v-for="rate in inductRates">
@@ -62,6 +66,7 @@
     <script type="text/javascript" src="https://unpkg.com/vue"></script>
     <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="growler.js"></script>
+	<script src="vue-google-charts/dist/vue-google-charts.browser.js"></script>
     <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
     <script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
 <script src="https://unpkg.com/luxon"></script>

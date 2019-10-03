@@ -12,11 +12,14 @@ var growler = new Vue({
         actualLeft: 0,
         inductDifference: 0,
         inductionStarted: false,
-        chartData: [],
+        chartData: [["Time","Average Rate","Induct Rate"]],
         startTime: null,
         ignoreRatesBelow: 0,
         ignoreRatesBefore: null,
-        inductURL:''
+        inductURL:'',
+        chartOptions:{
+            title: 'Rates'
+        }
     },
     methods: {
         beginInduction: function () {
@@ -32,7 +35,7 @@ var growler = new Vue({
                 today.setMinutes(today.getMinutes() + minutesRemaining)
             }
             growler.estimatedTimeComplete = today.toLocaleTimeString();
-            this.chartData.push([new Date(), this.getAverageRate()])
+            this.updateChartData()
         },
         getAverageRate: function () {
             var countedRates = 0
@@ -53,6 +56,7 @@ var growler = new Vue({
                 time: new Date().getTime(),
                 elapsed: this.inductRates == 0 ? 0 : new Date().getTime() - growler.inductRates[growler.inductRates.length - 1]
             })
+		 growler.updateChartData()
             this.calculateEstimatedTime()
         },
         minutesRemaining: function () {
@@ -79,6 +83,9 @@ var growler = new Vue({
                 this.calculateEstimatedTime()
             }, 1000)
         },
+updateChartData: function(){
+	growler.chartData.push([new Date(),growler.getAverageRate(),growler.inductRates[growler.inductRates.length-1]])
+},
         getNiceTime: function (time) {
             var dateTime = new Date(time);
             //return dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds()
