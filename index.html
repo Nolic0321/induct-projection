@@ -38,7 +38,7 @@
                 <div v-show="inductDifference > 0">Increase Induct Rate</div>
             </div>
             <div>
-                Request URL: <input type="text" v-model.lazy="inductURL"/>
+                Request URL: <input type="text" v-model.lazy="inductURL" />
                 <button v-on:click="requestInductRate(inductURL)">Request Rate</button>
             </div>
             <hr>
@@ -48,11 +48,7 @@
             <div>
                 <h3>Average Rates</h3>
             </div>
-		   <GChart
-    type="LineChart"
-    :data="chartData"
-    :options="chartOptions"
-  />
+            <line-chart chart-id="rates" :chartData="chartData" :options="chartOptions"></line-chart>
             <div v-show="inductRates.length > 0">
                 <ul>
                     <li v-for="rate in inductRates">
@@ -66,12 +62,13 @@
     <script type="text/javascript" src="https://unpkg.com/vue"></script>
     <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="text/javascript" src="growler.js"></script>
-	<script src="vue-google-charts/dist/vue-google-charts.browser.js"></script>
-    <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
-    <script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
-<script src="https://unpkg.com/luxon"></script>
-<script src="https://unpkg.com/vue-datetime"></script>
-<link rel="stylesheet" href="vue-datetime.min.css"></link>
+    <script type="text/javascript" src="linechart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+    <script src="https://unpkg.com/luxon"></script>
+    <script src="https://unpkg.com/vue-datetime"></script>
+    <link rel="stylesheet" href="vue-datetime.min.css">
+    </link>
 </body>
 
 

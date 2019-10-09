@@ -12,12 +12,22 @@ var growler = new Vue({
         actualLeft: 0,
         inductDifference: 0,
         inductionStarted: false,
-        chartData: [["Time","Average Rate","Induct Rate"]],
+        chartData: {
+            datasets: [{
+                    label: 'Average Rates',
+                    data: []
+                },
+                {
+                    label: 'Rates',
+                    data: []
+                }
+            ]
+        },
         startTime: null,
         ignoreRatesBelow: 0,
         ignoreRatesBefore: null,
-        inductURL:'',
-        chartOptions:{
+        inductURL: '',
+        chartOptions: {
             title: 'Rates'
         }
     },
@@ -56,7 +66,7 @@ var growler = new Vue({
                 time: new Date().getTime(),
                 elapsed: this.inductRates == 0 ? 0 : new Date().getTime() - growler.inductRates[growler.inductRates.length - 1]
             })
-		 growler.updateChartData()
+            growler.updateChartData()
             this.calculateEstimatedTime()
         },
         minutesRemaining: function () {
@@ -83,28 +93,34 @@ var growler = new Vue({
                 this.calculateEstimatedTime()
             }, 1000)
         },
-updateChartData: function(){
-	growler.chartData.push([new Date(),growler.getAverageRate(),growler.inductRates[growler.inductRates.length-1]])
-},
+        updateChartData: function () {
+            growler.chartData.datasets[0].data.push({
+                x: new Date(),
+                y: growler.getAverageRate()
+            })
+            growler.chartData.datasets[1].data.push({
+                x: new Date(),
+                y: growler.inductRates[growler.inductRates.length - 1]
+            })
+        },
         getNiceTime: function (time) {
             var dateTime = new Date(time);
             //return dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds()
             return dateTime.toLocaleTimeString()
         },
-        requestInductRate: function(url){
+        requestInductRate: function (url) {
             axios.get(
-                 url,
-      {
-	method: 'GET',
-      mode: 'no-cors',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-      }
-	})
-            .then(function(response){
-                console.log(response)
-            })
+                    url, {
+                        method: 'GET',
+                        mode: 'no-cors',
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                .then(function (response) {
+                    console.log(response)
+                })
         }
     }
 })
