@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Growler</title>
+</head>
+
+<body>
+    <div id="growler">
+        <div v-cloak v-show="inductionStarted">
+            <h1>Estimated Time Completed: {{estimatedTimeComplete}}</h1>
+        </div>
+        <hr>
+        <div>Total Packages: <input type="text" v-on:change="updateTotalPackages(totalPackages)"
+                v-model.number.lazy="totalPackages" />
+        </div>
+        <div>
+            <button v-show="!inductionStarted" v-on:click="beginInduction()">Begin Induction</button>
+        </div>
+        <div v-show="inductionStarted" v-cloak>
+            <div>
+                Induct Rate: <input type="text" v-model.number.lazy="inductRate" onClick="this.select()">
+                <button v-on:click="addInductRate(inductRate)">Add Rate</button>
+                <br>
+                Total Inducted <input type="text" v-model.number.lazy="totalInducted">
+                <button v-on:click="calculateEstimatedTime()">Update</button>
+            </div>
+            <hr>
+            <div>
+                Average Overall Rate: {{getAverageRate()}}
+                <br>
+                Projected Inducted: {{projectedInducted}}
+                <br>
+                Actual Inducted: {{totalInducted}}
+                <br>
+                Difference: {{inductDifference}}
+                <div v-show="inductDifference > 0">Increase Induct Rate</div>
+            </div>
+            <hr>
+            <div>
+                Ignore Rates Before: <datetime v-model="ignoreRatesBefore" type="datetime"></datetime>
+            </div>
+            <div>
+                <h3>Average Rates</h3>
+            </div>
+            <line-chart :data="chartData" label="Average Rate" :max="8000"></line-chart>
+            <div v-show="inductRates.length > 0">
+                <ul>
+                    <li v-for="rate in inductRates">
+                        {{rate.rate}} - {{getNiceTime(rate.time)}} - {{rate.elapsedTime}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <script type="text/javascript" src="https://unpkg.com/vue"></script>
+    <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="growler.js"></script>
+    <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+    <script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
+<script src="https://unpkg.com/luxon"></script>
+<script src="https://unpkg.com/vue-datetime"></script>
+<link rel="stylesheet" href="vue-datetime.min.css"></link>
+</body>
+
+
+</html>
