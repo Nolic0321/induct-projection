@@ -1,0 +1,7 @@
+{
+    "associates":{
+        "colgowdy":[2,3,4,5,6],
+        "weekdays":[1,2,3,4,5],
+        "satthruwed":[0,1,2,3,6]
+    }
+}
