@@ -10,7 +10,7 @@ var createAssocaiteTableParams = {
 	}
 };
 
-var postPuAssociateParams = login => {
+var postPutAssociateParams = (login) => {
 	return {
 		TableName: tableName,
 		Item: {
@@ -19,7 +19,7 @@ var postPuAssociateParams = login => {
 	};
 };
 
-var getAssociateParams = login => {
+var getAssociateParams = (login) => {
 	return {
 		Key: {
 			login: { S: login }
@@ -40,7 +40,7 @@ module.exports = function(app, db) {
 	// Create associate
 	app.post('/associates/:login', (req, res) => {
 		var login = req.params.login;
-		db.putItem(postPuAssociateParams(login), (err, data) => {
+		db.putItem(postPutAssociateParams(login), (err, data) => {
 			if (err) {
 				console.error('Unable to create ' + login + '. Error JSON:', JSON.stringify(err, null, 2));
 				res.send(err);
@@ -81,7 +81,7 @@ module.exports = function(app, db) {
 	// Update associate :login
 	app.put('/assocaites/:login', (req, res) => {
 		var login = req.params.login;
-		db.updateItem(postPuAssociateParams(login), (err, data) => {
+		db.updateItem(postPutAssociateParams(login), (err, data) => {
 			if (err) {
 				console.log(JSON.stringify(err, null, 2));
 				res.send(err);

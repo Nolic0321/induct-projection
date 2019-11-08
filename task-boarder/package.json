@@ -1,19 +1,21 @@
 {
-  "name": "task-boarder",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "dev": "nodemon server.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^1.19.4"
-  },
-  "dependencies": {
-    "aws-sdk": "^2.560.0",
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1"
-  }
+	"name": "task-boarder",
+	"version": "1.0.0",
+	"description": "",
+	"main": "server.js",
+	"scripts": {
+		"serve": "vue-cli-service serve",
+		"dev": "nodemon server.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"nodemon": "^1.19.4"
+	},
+	"dependencies": {
+		"@vue/cli-service": "^4.0.5",
+		"aws-sdk": "^2.560.0",
+		"body-parser": "^1.19.0",
+		"express": "^4.17.1"
+	}
 }

@@ -1,0 +1,92 @@
+[
+	{
+		"login": "colgowdy",
+		"info": {
+			"name": "Collin Gowdy",
+			"workdays": ["TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"],
+			"ambassador": true,
+			"dock": true,
+			"induct": false,
+			"unload": false,
+			"waterspider": false,
+			"sort": false,
+			"stage": false,
+			"divert": false
+		}
+	},
+	{
+		"login": "sortpref",
+		"info": {
+			"name": "Sort Preferred",
+			"workdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+			"ambassador": false,
+			"dock": false,
+			"induct": false,
+			"unload": false,
+			"waterspider": false,
+			"sort": true,
+			"stage": false,
+			"divert": false
+		}
+	},
+	{
+		"login": "stagepref",
+		"info": {
+			"name": "Stage Preferred",
+			"workdays": ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY"],
+			"ambassador": false,
+			"dock": false,
+			"induct": false,
+			"unload": false,
+			"waterspider": false,
+			"sort": false,
+			"stage": true,
+			"divert": false
+		}
+	},
+	{
+		"login": "floorpref",
+		"info": {
+			"name": "Floor Preferred",
+			"workdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+			"ambassador": false,
+			"dock": false,
+			"induct": false,
+			"unload": false,
+			"waterspider": false,
+			"sort": true,
+			"stage": true,
+			"divert": true
+		}
+	},
+	{
+		"login": "dockpref",
+		"info": {
+			"name": "Dock Preferred",
+			"workdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+			"ambassador": false,
+			"dock": true,
+			"induct": true,
+			"unload": true,
+			"waterspider": true,
+			"sort": false,
+			"stage": false,
+			"divert": false
+		}
+	},
+	{
+		"login": "ambassador",
+		"info": {
+			"name": "Ambassador Associate",
+			"workdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"],
+			"ambassador": true,
+			"dock": false,
+			"induct": false,
+			"unload": false,
+			"waterspider": false,
+			"sort": false,
+			"stage": false,
+			"divert": false
+		}
+	}
+]
