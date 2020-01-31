@@ -1,16 +1,26 @@
+<style scoped>
+.card {
+  border-style: solid;
+}
+</style>
+
 <template>
-  <div>
-    Name: {{associate.name}}
+  <div class="card" v-draggable>
+    Name: {{ associate.name }}
     <br />
-    Login: {{associate.login}}
+    Login: {{ associate.login }}
     <br />
-    Workdays: {{associate.workdays}}
+    Workdays: {{ associate.workdays }}
   </div>
 </template>
 
 <script>
+import { Draggable } from "draggable-vue-directive";
 export default {
   name: "card",
-  props: ["associate"]
+  props: ["associate"],
+  directives: {
+    Draggable
+  }
 };
 </script>
