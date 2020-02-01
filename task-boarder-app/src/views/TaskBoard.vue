@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Task Board</h1>
-    <List title="Test List" slots="5"></List>
+    <List title="Test List" v-bind:slots="5"></List>
   </div>
 </template>
 

@@ -3,7 +3,7 @@
 
 <template>
   <div class="list">
-    <div v-for="n in 10" v-bind:key="n">{{n}}</div>
+    <div v-for="n in slots" v-bind:key="n"></div>
   </div>
 </template>
 
