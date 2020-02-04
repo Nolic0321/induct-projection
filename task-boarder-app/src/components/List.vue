@@ -1,10 +1,13 @@
 <style scoped>
+.slot {
+  border-style: solid;
+}
 </style>
 
 <template>
-  <div class="list">
-    <div v-for="n in slots" v-bind:key="n"></div>
-  </div>
+  <span class="list">
+    <div class="slot" v-for="n in slots" v-bind:key="n">{{n}}</div>
+  </span>
 </template>
 
 <script>
