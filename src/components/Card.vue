@@ -28,6 +28,7 @@ export default {
 	directives: {
 		Draggable
 	},
+
 	data() {
 		return {
 			draggableValue: {
@@ -35,6 +36,9 @@ export default {
 				onDragEnd: this.onDragEnd
 			}
 		};
+	},
+	mounted: function() {
+		this.$store.dispatch('addCard', this);
 	},
 	methods: {
 		onDragEnd: function(positionDiff, absolutePosition, event) {
