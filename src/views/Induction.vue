@@ -156,7 +156,6 @@ export default {
       var timeout;
       clearInterval(timeout);
       if (event) {
-        console.log(event);
       }
       timeout = setTimeout(() => {
         this.calculateEstimatedTime();
