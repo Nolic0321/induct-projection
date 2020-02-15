@@ -155,8 +155,6 @@ export default {
     totalInductedChanged: function(event) {
       var timeout;
       clearInterval(timeout);
-      if (event) {
-      }
       timeout = setTimeout(() => {
         this.calculateEstimatedTime();
       }, 1000);
