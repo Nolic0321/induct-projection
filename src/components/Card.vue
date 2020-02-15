@@ -49,7 +49,6 @@ export default {
 				if (element.classList.contains('placeable')) {
 					element.appendChild(this.$el);
 					validDrop = true;
-					console.log('Dropped on ' + element.localName);
 				}
 			}
 			this.$el.style.position = 'inherit';
