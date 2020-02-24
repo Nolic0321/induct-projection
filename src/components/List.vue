@@ -6,7 +6,7 @@
 
 <template>
   <span class="list">
-    <div class="slot" v-for="n in slots" v-bind:key="n">{{n}}</div>
+    <div class="slot" v-for="n in slots" v-bind:key="n">{{ n }}</div>
   </span>
 </template>
 
