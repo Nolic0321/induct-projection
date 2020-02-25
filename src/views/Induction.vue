@@ -27,6 +27,8 @@
 				<br />Total Inducted
 				<input type="text" v-model.number.lazy="totalInducted" />
 				<button v-on:click="calculateEstimatedTime()">Update</button>
+				<br />
+				<button v-on:click="resetPage()">Reset</button>
 			</div>
 			<hr />
 			<div>
@@ -57,18 +59,27 @@
 import Vue from "vue";
 import ChartKick from "vue-chartkick";
 import Chart from "chart.js";
-import { DateTime } from "vue-datetime";
+import { Datetime } from "vue-datetime";
+import "vue-datetime/dist/vue-datetime.css";
+import low from "lowdb";
+import LocalStoreage from "lowdb/adapters/LocalStorage";
+
+const adapter = new LocalStoreage("inductrates");
+const db = low(adapter);
+
+const freshRateState = { rates: [], averageRate: [], totalPackages: 0, inductionStarted: false, startTime: null };
+db.defaults(freshRateState).write();
 
 Vue.use(ChartKick.use(Chart));
+Vue.use(Datetime);
 export default {
 	name: "induction-projection",
 	components: {
-		datetime: DateTime
+		datetime: Datetime
 	},
 	data: function() {
 		return {
 			totalPackages: 0,
-			inductRates: [],
 			totalInducted: 0,
 			inductRate: 0,
 			today: new Date(),
@@ -87,30 +98,63 @@ export default {
 			ignoreRatesBefore: null
 		};
 	},
+	mounted() {
+		this.inductionStarted = db.get("inductionStarted").value();
+		this.startTime = db.get("startTime").value();
+		this.totalPackages = db.get("totalPackages").value();
+		this.ignoreRatesBefore = this.startTime;
+		if (db.get("rates").size() > 0) this.calculateEstimatedTime();
+	},
 	methods: {
 		beginInduction: function() {
 			this.inductionStarted = true;
 			this.startTime = new Date();
 			this.ignoreRatesBefore = new Date();
+			db.setState(freshRateState);
+			db.set("totalPackages", this.totalPackages)
+				.set("inductionStarted", this.inductionStarted)
+				.set("startTime", this.startTime)
+				.write();
+		},
+		resetPage: function() {
+			db.setState(freshRateState).write();
+			location.reload();
 		},
 		calculateEstimatedTime: function() {
 			this.updateInducteLeftValues();
 			var today = new Date();
-			if (this.inductRates.length > 2) {
+			var inductRates = this.getLSInductRates();
+			if (inductRates.length > 2) {
 				var minutesRemaining = this.minutesRemaining();
 				today.setMinutes(today.getMinutes() + minutesRemaining);
 			}
 			this.estimatedTimeComplete = today.toLocaleTimeString();
-			//this.chartData.push([new Date(), this.getAverageRate()]);
-			var entry = new Date().toLocaleTimeString();
-			this.chartData[1]["data"][entry] = this.getAverageRate();
-			this.chartData[0]["data"][new Date().toLocaleTimeString()] = this.inductRates[this.inductRates.length - 1].rate;
+			// //this.chartData.push([new Date(), this.getAverageRate()]);
+			// var entry = new Date().toLocaleTimeString();
+			// this.chartData[1]["data"][entry] = this.getAverageRate();
+			// this.chartData[0]["data"][new Date().toLocaleTimeString()] = inductRates[inductRates.length - 1].rate;
+			this.refreshChart();
 			this.$refs.linechart.updateChart();
 		},
+		refreshChart: function() {
+			if (db.get("rates").size() != 0) {
+				db.get("rates")
+					.value()
+					.forEach((key, rate) => {
+						this.chartData[0]["data"][new Date(rate.time).toLocaleTimeString()] = rate.rate;
+					});
+				db.get("averageRate")
+					.value()
+					.forEach((key, rate) => {
+						this.chartData[1]["data"][new Date(rate.time).toLocaleTimeString()] = rate.rate;
+					});
+			}
+		},
 		getAverageRate: function() {
+			var inductRates = this.getLSInductRates();
 			var countedRates = 0;
 			var ignoreRatesBeforeTime = new Date(this.ignoreRatesBefore);
-			var reducedRates = this.inductRates.reduce(function(total, n) {
+			var reducedRates = inductRates.reduce(function(total, n) {
 				if (n.time >= ignoreRatesBeforeTime) {
 					countedRates++;
 					return total + n.rate;
@@ -120,11 +164,19 @@ export default {
 			return countedRates == 0 ? 0 : Math.round(reducedRates / countedRates);
 		},
 		addInductRate: function(inductRate) {
-			this.inductRates.push({
-				rate: inductRate,
-				time: new Date().getTime(),
-				elapsed: this.inductRates == 0 ? 0 : new Date().getTime() - this.inductRates[this.inductRates.length - 1]
-			});
+			var currentTime = new Date().getTime();
+			db.get("rates")
+				.push({
+					rate: inductRate,
+					time: currentTime
+				})
+				.write();
+			db.get("averageRate")
+				.push({
+					rate: this.getAverageRate(),
+					time: currentTime
+				})
+				.write();
 			this.calculateEstimatedTime();
 		},
 		minutesRemaining: function() {
@@ -153,6 +205,12 @@ export default {
 			var dateTime = new Date(time);
 			//return dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds()
 			return dateTime.toLocaleTimeString();
+		},
+		getLSInductRates: function() {
+			return db.get("rates").value();
+		},
+		getLSAverageRates: function() {
+			return db.get("averageRates").value();
 		}
 	}
 };
