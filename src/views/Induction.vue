@@ -12,7 +12,7 @@
 		<hr />
 		<div>
 			Total Packages:
-			<input type="text" v-on:change="updateTotalPackages(totalPackages)" v-model.number.lazy="totalPackages" />
+			<input type="text" v-on:change="calculateEstimatedTime()" v-model.number.lazy="totalPackages" />
 		</div>
 		<div>
 			<button v-show="!inductionStarted" v-on:click="beginInduction()">
@@ -32,24 +32,20 @@
 			</div>
 			<hr />
 			<div>
-				Average Overall Rate: {{ getAverageRate() }}
-				<br />
-				Projected Inducted: {{ projectedInducted }}
-				<br />
-				Actual Inducted: {{ totalInducted }}
-				<br />
-				Difference: {{ inductDifference }}
-				<div v-show="inductDifference > 0">Increase Induct Rate</div>
+				<h1>Target Induct Rate: {{ targetRate }}</h1>
 			</div>
+			<div><label for="checkbox">Include break?</label> <input type="checkbox" id="checkbox" v-model="includeBreak" v-on:change="calculateEstimatedTime" /></div>
+			<div>Target Completion Time<datetime id="targetcompletiontime" v-model="inductCompletionTime" type="datetime" v-on:change="calculateEstimatedTime"></datetime></div>
+			<div>Average Overall Rate: {{ getAverageRate() }}</div>
 			<hr />
 			<div>
 				Ignore Rates Before:
-				<datetime v-model="ignoreRatesBefore" type="datetime"></datetime>
+				<datetime id="ignoreratesbefore" v-model="ignoreRatesBefore" type="datetime"></datetime>
 			</div>
 			<div>
 				<h3>Average Rates</h3>
 			</div>
-			<line-chart ref="linechart" :data="chartData" :min="0" label="Average Rate"></line-chart>
+			<line-chart ref="linechart" :data="chartData" :curve="false" :discrete="true" :min="0" label="Average Rate"></line-chart>
 		</div>
 		<hr />
 	</div>
@@ -63,6 +59,15 @@ import { Datetime } from "vue-datetime";
 import "vue-datetime/dist/vue-datetime.css";
 import low from "lowdb";
 import LocalStoreage from "lowdb/adapters/LocalStorage";
+
+Date.prototype.toMinutes = function() {
+	console.log("Converting " + this.valueOf() + " into " + this.valueOf() / 1000 / 60);
+	return this.valueOf() / 1000 / 60;
+};
+
+Date.prototype.toHours = function() {
+	return this.valueOf() / 1000 / 60 / 60;
+};
 
 const adapter = new LocalStoreage("inductrates");
 const db = low(adapter);
@@ -84,10 +89,7 @@ export default {
 			inductRate: 0,
 			today: new Date(),
 			estimatedTimeComplete: new Date().toLocaleTimeString(),
-			projectedInducted: 0,
-			projectedLeft: 0,
 			actualLeft: 0,
-			inductDifference: 0,
 			inductionStarted: false,
 			chartData: [
 				{ name: "Rates", data: {} },
@@ -95,25 +97,32 @@ export default {
 			],
 			startTime: null,
 			ignoreRatesBelow: 0,
-			ignoreRatesBefore: null
+			ignoreRatesBefore: null,
+			inductCompletionTime: null,
+			includeBreak: true,
+			targetRate: 0
 		};
 	},
 	mounted() {
 		this.inductionStarted = db.get("inductionStarted").value();
 		this.startTime = db.get("startTime").value();
+		this.inductCompletionTime = db.get("inductionCompletionTime").value();
 		this.totalPackages = db.get("totalPackages").value();
 		this.ignoreRatesBefore = this.startTime;
 		if (db.get("rates").size() > 0) this.calculateEstimatedTime();
 	},
 	methods: {
 		beginInduction: function() {
-			this.inductionStarted = true;
 			this.startTime = new Date();
+			this.inductCompletionTime = new Date();
+			this.inductCompletionTime.setHours(10, 0, 0);
 			this.ignoreRatesBefore = new Date();
 			db.setState(freshRateState);
+			this.inductionStarted = true;
 			db.set("totalPackages", this.totalPackages)
 				.set("inductionStarted", this.inductionStarted)
 				.set("startTime", this.startTime)
+				.set("inductionCompletionTime", this.inductCompletionTime)
 				.write();
 		},
 		resetPage: function() {
@@ -121,34 +130,40 @@ export default {
 			location.reload();
 		},
 		calculateEstimatedTime: function() {
-			this.updateInducteLeftValues();
+			this.actualLeft = this.totalPackages - this.totalInducted;
 			var today = new Date();
 			var inductRates = this.getLSInductRates();
 			if (inductRates.length > 2) {
-				var minutesRemaining = this.minutesRemaining();
-				today.setMinutes(today.getMinutes() + minutesRemaining);
+				var minutesRemainingByPackageCount = this.minutesRemainingByPackageCount();
+				console.log(minutesRemainingByPackageCount);
+				today.setMinutes(today.getMinutes() + minutesRemainingByPackageCount);
 			}
 			this.estimatedTimeComplete = today.toLocaleTimeString();
-			// //this.chartData.push([new Date(), this.getAverageRate()]);
-			// var entry = new Date().toLocaleTimeString();
-			// this.chartData[1]["data"][entry] = this.getAverageRate();
-			// this.chartData[0]["data"][new Date().toLocaleTimeString()] = inductRates[inductRates.length - 1].rate;
+			this.calculateTargetInductRate();
 			this.refreshChart();
-			this.$refs.linechart.updateChart();
+		},
+		calculateTargetInductRate: function() {
+			var date = new Date();
+			var completionDate = new Date(this.inductCompletionTime);
+			var remainingPackages = this.totalPackages - this.totalInducted;
+			var remainingMinutes = completionDate.toMinutes() - date.toMinutes();
+			console.log("Remaining Minutes: " + remainingMinutes);
+			this.targetRate = Math.round((remainingPackages / (remainingMinutes - (this.includeBreak ? 15 : 0))) * 60);
 		},
 		refreshChart: function() {
 			if (db.get("rates").size() != 0) {
 				db.get("rates")
 					.value()
-					.forEach((key, rate) => {
-						this.chartData[0]["data"][new Date(rate.time).toLocaleTimeString()] = rate.rate;
+					.forEach((rate, key) => {
+						this.chartData[0]["data"][new Date(rate.time).toLocaleString()] = rate.rate;
 					});
 				db.get("averageRate")
 					.value()
-					.forEach((key, rate) => {
-						this.chartData[1]["data"][new Date(rate.time).toLocaleTimeString()] = rate.rate;
+					.forEach((rate, key) => {
+						this.chartData[1]["data"][new Date(rate.time).toLocaleString()] = rate.rate;
 					});
 			}
+			this.$refs.linechart.updateChart();
 		},
 		getAverageRate: function() {
 			var inductRates = this.getLSInductRates();
@@ -179,20 +194,9 @@ export default {
 				.write();
 			this.calculateEstimatedTime();
 		},
-		minutesRemaining: function() {
+		minutesRemainingByPackageCount: function() {
 			var aveRate = this.getAverageRate();
-
-			return Number.isNaN(aveRate) ? 0 : (this.actualLeft / aveRate) * 60;
-		},
-		updateTotalPackages: function(newTotal) {
-			this.totalPackages = newTotal;
-			this.updateInducteLeftValues();
-			//Update current values to reflect new total changes
-		},
-		updateInducteLeftValues: function() {
-			this.projectedInducted = Math.round((this.getAverageRate() / 60 / 60 / 1000) * (new Date() - this.startTime));
-			this.actualLeft = this.totalPackages - this.totalInducted;
-			this.inductDifference = this.projectedInducted - this.totalInducted;
+			return (this.actualLeft / aveRate) * 60 + this.includeBreak ? 15 : 0;
 		},
 		totalInductedChanged: function(event) {
 			var timeout;
