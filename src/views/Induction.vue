@@ -61,7 +61,6 @@ import low from "lowdb";
 import LocalStoreage from "lowdb/adapters/LocalStorage";
 
 Date.prototype.toMinutes = function() {
-	console.log("Converting " + this.valueOf() + " into " + this.valueOf() / 1000 / 60);
 	return this.valueOf() / 1000 / 60;
 };
 
@@ -135,7 +134,6 @@ export default {
 			var inductRates = this.getLSInductRates();
 			if (inductRates.length > 2) {
 				var minutesRemainingByPackageCount = this.minutesRemainingByPackageCount();
-				console.log(minutesRemainingByPackageCount);
 				today.setMinutes(today.getMinutes() + minutesRemainingByPackageCount);
 			}
 			this.estimatedTimeComplete = today.toLocaleTimeString();
@@ -147,7 +145,6 @@ export default {
 			var completionDate = new Date(this.inductCompletionTime);
 			var remainingPackages = this.totalPackages - this.totalInducted;
 			var remainingMinutes = completionDate.toMinutes() - date.toMinutes();
-			console.log("Remaining Minutes: " + remainingMinutes);
 			this.targetRate = Math.round((remainingPackages / (remainingMinutes - (this.includeBreak ? 15 : 0))) * 60);
 		},
 		refreshChart: function() {
